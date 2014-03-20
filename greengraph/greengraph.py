@@ -59,7 +59,6 @@ def location_sequence(start,end,steps):
 
 def greengraph(start,end,steps,**args):
   locations=location_sequence(geolocate(start),geolocate(end),steps)
-  print locations
   greenness=[
     count_green(get_map_at(lat,long,**args))
     for lat,long in locations]
