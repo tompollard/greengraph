@@ -2,6 +2,7 @@ from nose.tools import assert_almost_equal
 from nose.tools import assert_in, assert_equal, assert_false
 from ..greengraph import geolocate, maps_url_for, get_map_at
 from ..greengraph import count_green, is_green, location_sequence
+from ..greengraph import greengraph
 import png
 import os
 
@@ -28,12 +29,13 @@ def test_generate_satellite_url():
 
 def test_get_png():
   london=(51.508515, -0.1254872)
+
   map=get_map_at(*london)
   # Can't compare against fixture because online map changes
   assert_equal(map[3]['size'],(400,400))
 
 def test_count_green():
-  assert_equal(count_green(example()),102)
+  assert_equal(count_green(example()),15957)
 
 def test_isgreen():
   assert(is_green(10,50,5))
@@ -43,3 +45,7 @@ def test_locationsequence():
   result=location_sequence((0,0),(10,10),5)
   assert_equal(result[0],(0,0))
   assert_equal(result[1],(2.5,2.5))
+
+#def test_driver():
+#  result=greengraph("London","Cambridge, England",10)
+#  assert_equal(len(result),10)
