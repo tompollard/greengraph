@@ -1,7 +1,7 @@
 from nose.tools import assert_almost_equal
 from nose.tools import assert_in, assert_equal, assert_false
 from ..greengraph import geolocate, maps_url_for, get_map_at
-from ..greengraph import count_green, is_green
+from ..greengraph import count_green, is_green, location_sequence
 import png
 import os
 
@@ -38,3 +38,8 @@ def test_count_green():
 def test_isgreen():
   assert(is_green(10,50,5))
   assert_false(is_green(50,10,5))
+
+def test_locationsequence():
+  result=location_sequence((0,0),(10,10),5)
+  assert_equal(result[0],(0,0))
+  assert_equal(result[1],(2.5,2.5))

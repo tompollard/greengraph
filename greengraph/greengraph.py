@@ -2,6 +2,7 @@ import geopy
 import urllib2
 import png
 from itertools import izip
+from numpy import linspace
 
 geocoder=geopy.geocoders.GoogleV3(domain="maps.google.co.uk")
 
@@ -43,3 +44,11 @@ def count_green(image):
 
 def is_green(r,g,b):
   return g>(r+b)
+
+def location_sequence(start,end,steps):
+  # Would actually prefer this if steps
+  # were deduced from zoomlevel
+  # But need projection code for that
+  lats=linspace(start[0],end[0],steps)
+  longs=linspace(start[0],end[0],steps)
+  return zip(lats,longs)
