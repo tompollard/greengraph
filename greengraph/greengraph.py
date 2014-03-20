@@ -1,4 +1,6 @@
 import geopy
+import urllib2
+import png
 
 geocoder=geopy.geocoders.GoogleV3(domain="maps.google.co.uk")
 
@@ -25,3 +27,7 @@ def maps_url_for(lat,long,
     key,value in params.items()])
 
   return url+paramstring
+
+def get_map_at(lat,long,**args):
+  data=urllib2.urlopen(maps_url_for(lat,long,**args))
+  return png.Reader(file=data).asRGB()
