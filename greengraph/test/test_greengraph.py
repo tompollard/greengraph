@@ -1,8 +1,13 @@
 from nose.tools import assert_almost_equal
-from nose.tools import assert_in, assert_equal
+from nose.tools import assert_in, assert_equal, assert_false
 from ..greengraph import geolocate, maps_url_for, get_map_at
+from ..greengraph import count_green, is_green
 import png
 import os
+
+def example():
+  return png.Reader(filename=(os.path.join(
+  os.path.dirname(__file__),"fixtures","london.png"))).asRGB()
 
 def test_geolocate():
   latlong=geolocate("London")
@@ -24,7 +29,12 @@ def test_generate_satellite_url():
 def test_get_png():
   london=(51.508515, -0.1254872)
   map=get_map_at(*london)
-  example=png.Reader(filename=(os.path.join(
-    os.path.dirname(__file__),"fixtures","london.png"))).asRGB()[2]
-  for a,b in zip(example,map[2]):
-    assert_equal(a,b)
+  # Can't compare against fixture because online map changes
+  assert_equal(map[3]['size'],(400,400))
+
+def test_count_green():
+  assert_equal(count_green(example()),102)
+
+def test_isgreen():
+  assert(is_green(10,50,5))
+  assert_false(is_green(50,10,5))

@@ -1,6 +1,7 @@
 import geopy
 import urllib2
 import png
+from itertools import izip
 
 geocoder=geopy.geocoders.GoogleV3(domain="maps.google.co.uk")
 
@@ -31,3 +32,14 @@ def maps_url_for(lat,long,
 def get_map_at(lat,long,**args):
   data=urllib2.urlopen(maps_url_for(lat,long,**args))
   return png.Reader(file=data).asRGB()
+
+def count_green(image):
+  count = 0
+  for row in image[2]:
+    pixels=izip(*[iter(row)]*3)
+    # Chunk idiom from http://docs.python.org/2/library/itertools.html#recipes
+    count+=sum(1 for pixel in pixels if is_green(*pixel))
+  return count
+
+def is_green(r,g,b):
+  return g>(r+b)
