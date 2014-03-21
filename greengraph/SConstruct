@@ -1,0 +1,57 @@
+import os
+from glob import glob
+from greengraph import *
+from os.path import join,splitext,basename,dirname
+import csv
+env=Environment()
+
+def download_each_location(target,source,env):
+    buffer=open(target[0].path,'w')
+    buffer.write(get_png_at(*geolocate(splitext(target[0].path)[1])).read())
+
+def png_to_pixels(target,source,env):
+  data=open(source[0].path)
+  rows=read_png(data)
+  pix=pixels(rows)
+  buffer=open(target[0].path,'w')
+  writer=csv.writer(buffer)
+  for pixel in pix:
+    writer.writerow(pixel)
+
+def counter_action(target,source,env):
+  buffer=open(target[0].path,'w')
+  writer=csv.writer(buffer)
+  for pixels in source:
+    data=open(pixels.path)
+    reader=csv.reader(data)
+    location=splitext(basename(pixels.path))[0]
+    count=count_green_pixels(row for row in reader)
+    writer.writerow([location,count])
+
+env.Append(BUILDERS={
+
+  'Png':env.Builder(
+    action=download_each_location,
+    suffix='png'
+  ),
+
+  'Csv':env.Builder(
+    action=png_to_pixels,
+    suffix='csv',
+    src_suffix='png'
+  ),
+
+  'Results':env.Builder(
+    action=counter_action,
+    src_suffix='csv',
+  )
+})
+
+
+csv_files=[]
+for location in open('locations').readlines():
+  location=location[:-1]
+  png=env.Png(location,'locations')
+  csv_files.append(env.Csv(png))
+
+results=env.Results('results',csv_files)
