@@ -1,7 +1,7 @@
 import geopy
 import urllib2
 import png
-from itertools import izip
+from itertools import izip,chain
 from numpy import linspace
 
 geocoder=geopy.geocoders.GoogleV3(domain="maps.google.co.uk")
@@ -30,20 +30,31 @@ def maps_url_for(lat,long,
 
   return url+paramstring
 
-def get_map_at(lat,long,**args):
-  data=urllib2.urlopen(maps_url_for(lat,long,**args))
+def get_png_at(lat,long,**args):
+  return urllib2.urlopen(maps_url_for(lat,long,**args))
+
+def read_png(data):
   return png.Reader(file=data).asRGB()
 
+def get_map_at(lat,long,**args):
+  data=get_png_at(lat,long,**args)
+  return read_png(data)
+
+def pixels(image):
+  return chain.from_iterable(izip(*[iter(row)]*3) for row in image[2])
+  # Chunk idiom from http://docs.python.org/2/library/itertools.html#recipes
+
 def count_green(image):
+  pix=pixels(image)
+  return count_green_pixels(pix)
+
+def count_green_pixels(pix):
   count = 0
-  for row in image[2]:
-    pixels=izip(*[iter(row)]*3)
-    # Chunk idiom from http://docs.python.org/2/library/itertools.html#recipes
-    #for pixel in pixels:
-      #print pixel
-    #  if is_green(*pixel):
-    #    count+=1
-    count+=sum(1 for pixel in pixels if is_green(*pixel))
+  #for pixel in pixels:
+    #print pixel
+  #  if is_green(*pixel):
+  #    count+=1
+  count+=sum(1 for pixel in pix if is_green(*pixel))
   return count
 
 def is_green(r,g,b):
